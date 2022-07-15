@@ -1,0 +1,32 @@
+Package: METAFlux
+Title:Characterizing metabolism from bulk and single-cell RNA-seq data using METAFlux
+Version: 0.0.0.9000
+Authors@R: 
+       c(
+    person(given = "Yuefan",
+           family = "Huang",
+           role = c("aut", "cre"),
+           email = "YHuang15@mdanderson.org"), 
+    person(given = "Kyle", 
+           family = "Tsai", 
+           role = "aut",
+           email = "kyletsai2003@gmail.com")
+    )
+Description: Calculate fluxes from bulk and sc-rna seq data
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 2.10)
+Imports: 
+    stringr,
+    osqp,
+    stringi,
+    Seurat,
+    dplyr
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
