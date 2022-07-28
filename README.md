@@ -1,7 +1,7 @@
 # METAFlux
 ## Capabilities
-* Use genome scale metabolic model and FBA (Flux balance analysis) with gene expression to derive metabolic fluxes for 13,082 reactions for bulk and RNA-seq datasets
-* Discover various modes of metabolic cooperation and competition in single-cell data
+* Use genome scale metabolic model and FBA (Flux balance analysis) with gene expression to derive metabolic fluxes for 13,082 reactions for bulk RNA-seq datasets
+* Discover various modes of metabolic cooperation and competition in single-cell RNA-seq data
 * Has the potential to improve the understanding of aberrant metabolism and serve as a preliminary source to investigate specific metabolic targets.
 
 Check out the full paper for more detailed methods and applications: 
@@ -10,7 +10,7 @@ Check out the full paper for more detailed methods and applications:
 ## Installation 
 METAFlux R package can be easily installed from Github using devtools:
 
-`devtools::install_github('Rhyf/METAFlux',build_vignettes = T)`
+`devtools::install_github('Rhyf/METAFlux')`
 
 ### Installation of Other Dependencies
 * Install the osqp package for optimization using `install.packages('osqp')`.
