@@ -12,10 +12,10 @@ METAFlux R package can be easily installed from Github using devtools:
 
 `devtools::install_github('Rhyf/METAFlux')`
 
-### Installation of Other Dependencies
+### Installation of Other Dependencies if those packages are not correctly installed.
 * Install the osqp package for optimization using `install.packages('osqp')`.
 * Install the dplyr package using `install.packages('dplyr')`.
-* Install the utils package using `install.packages('utils')`.
+
 
 
 ## Tutorial
