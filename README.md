@@ -1,6 +1,6 @@
 # METAFlux
 ## Capabilities
-* Use genome scale metabolic model and FBA (Flux balance analysis) with gene expression to derive metabolic fluxes for 13,082 reactions for bulk and single cell RNA-seq datasets
+* Use genome scale metabolic model and FBA (Flux balance analysis) with gene expression to derive metabolic fluxes for bulk and single cell RNA-seq datasets
 * Discover various modes of metabolic cooperation and competition in single-cell RNA-seq data
 * Has the potential to improve the understanding of aberrant metabolism and serve as a preliminary source to investigate specific metabolic targets.
 
