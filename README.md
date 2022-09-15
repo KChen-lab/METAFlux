@@ -24,6 +24,5 @@ METAFlux R package can be easily installed from Github using devtools:
 
 ## Tutorial
 Please check out this link for a full tutorial on using METAFlux:
-[METAFlux tutorial](https://rhyf.github.io/METAFlux/)
 
-
+- [Full tutorial using METFAFlux for bulk and single-cell RNA seq data analysis with detailed explanation of each function](https://htmlpreview.github.io/?https://github.com/KChen-lab/METAFlux/blob/main/Tutorials/pipeline.html)
