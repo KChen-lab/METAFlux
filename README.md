@@ -6,6 +6,7 @@
 ## Capabilities
 * Use genome scale metabolic model and FBA (Flux balance analysis) to derive 13,082 metabolic fluxes for bulk and single cell RNA-seq datasets
 * Discover different modes of metabolic cooperation and competition in single-cell RNA-seq data
+* Enable massive public RNA-seq datasets mining in cancer metabolism
 
 
 Check out the full paper for more detailed methods and applications: 
