@@ -14,7 +14,7 @@ Check out the full paper for more detailed methods and applications:
 ## Installation 
 METAFlux R package can be easily installed from Github using devtools:
 
-`devtools::install_github('Rhyf/METAFlux')`
+`devtools::install_github('KChen-lab/METAFlux')`
 
 ### Installation of Other Dependencies
 * Install the osqp package for optimization using `install.packages('osqp')`, If you encounter any issue during METAFlux installation.
