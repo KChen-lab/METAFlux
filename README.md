@@ -1,4 +1,8 @@
-# METAFlux
+# METAFlux: Characterizing metabolism from bulk and single-cell RNA-seq data 
+<p align="center">
+  <img width="200"  src="https://github.com/KChen-lab/METAFlux/blob/main/METAFlux%20logo.jpeg">
+</p>
+
 ## Capabilities
 * Use genome scale metabolic model and FBA (Flux balance analysis) with gene expression to derive metabolic fluxes for bulk and single cell RNA-seq datasets
 * Discover various modes of metabolic cooperation and competition in single-cell RNA-seq data
