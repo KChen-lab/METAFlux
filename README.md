@@ -1,6 +1,6 @@
 # METAFlux: Characterizing metabolism from bulk and single-cell RNA-seq data 
 <p align="center">
-  <img width="200"  src="https://github.com/KChen-lab/METAFlux/blob/main/METAFlux%20logo.jpeg">
+  <img width="300"  src="https://github.com/KChen-lab/METAFlux/blob/main/METAFlux%20logo.jpeg">
 </p>
 
 ## Capabilities
