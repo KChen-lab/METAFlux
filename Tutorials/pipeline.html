@@ -402,7 +402,7 @@ code span.ot { color: #007020; }
 <li><a href="#quick-workflow">2.Quick workflow</a>
 <ul>
 <li><a href="#for-bulk-rna-seq-sample">2.1 For bulk RNA-seq sample</a></li>
-<li><a href="#for-sc-rna-seq-sample">2.1 For sc RNA-seq sample</a></li>
+<li><a href="#for-scrna-seq-sample">2.1 For scRNA-seq sample</a></li>
 </ul></li>
 <li><a href="#step-by-step-breakdownbulk-rna-seq-pipeline">3.Step by step breakdown:Bulk RNA-seq pipeline</a>
 <ul>
@@ -451,7 +451,14 @@ code span.ot { color: #007020; }
 <span id="cb1-6"><a href="#cb1-6"></a><span class="co">#Calculate mras for cell line data</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>scores&lt;-<span class="kw">calculate_reaction_score</span>(bulk_test_example)</span>
 <span id="cb1-8"><a href="#cb1-8"></a><span class="co">#Calculate flux for cell line data</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>flux&lt;-<span class="kw">compute_flux</span>(<span class="dt">mras=</span>scores,<span class="dt">medium =</span> cell_medium) </span></code></pre></div>
+<span id="cb1-9"><a href="#cb1-9"></a>flux&lt;-<span class="kw">compute_flux</span>(<span class="dt">mras=</span>scores,<span class="dt">medium =</span> cell_medium) </span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co">#optional: flux scores cubic root normalization</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>cbrt &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb1-13"><a href="#cb1-13"></a>    <span class="kw">sign</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(x)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>}</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>flux=<span class="kw">cbrt</span>(flux)</span></code></pre></div>
 <p><strong>2.human derived data</strong></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(METAFlux)</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co">#load the toy example</span></span>
@@ -461,10 +468,17 @@ code span.ot { color: #007020; }
 <span id="cb2-6"><a href="#cb2-6"></a><span class="co">#Calculate mras for human sample data</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a>scores&lt;-<span class="kw">calculate_reaction_score</span>(bulk_test_example)</span>
 <span id="cb2-8"><a href="#cb2-8"></a><span class="co">#Calculate flux for human sample data</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>flux&lt;-<span class="kw">compute_flux</span>(<span class="dt">mras=</span>scores,<span class="dt">medium=</span>human_blood) </span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9"></a>flux&lt;-<span class="kw">compute_flux</span>(<span class="dt">mras=</span>scores,<span class="dt">medium=</span>human_blood) </span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#optional: flux scores cubic root normalization</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>cbrt &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    <span class="kw">sign</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(x)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb2-14"><a href="#cb2-14"></a>}</span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>flux=<span class="kw">cbrt</span>(flux)</span></code></pre></div>
 </div>
-<div id="for-sc-rna-seq-sample" class="section level2">
-<h2>2.1 For sc RNA-seq sample</h2>
+<div id="for-scrna-seq-sample" class="section level2">
+<h2>2.1 For scRNA-seq sample</h2>
 <p>Here we only demonstrate how to interface with Seurat object for one <strong>patient sample</strong>. Please refer to the example code at the end of this section for multiple samples pipeline.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(METAFlux)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="co">#load the toy seurat example, this data only has one patient. For mutiple samples,see example code at the end of this section.</span></span>
@@ -499,7 +513,15 @@ code span.ot { color: #007020; }
 ##   0.125   0.875</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">#calculate flux: here we used human blood as our medium, but please use cell line medium when samples are cell line.</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">#num_cell=number of cell types/clusters, here we only have t cells and tumor cell, thus input is 2</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>flux=<span class="kw">compute_sc_flux</span>(<span class="dt">num_cell =</span> <span class="dv">2</span>,<span class="dt">fraction =</span><span class="kw">c</span>(<span class="fl">0.125</span>,<span class="fl">0.875</span>),<span class="dt">fluxscore=</span>scores,<span class="dt">medium =</span> human_blood)</span></code></pre></div>
+<span id="cb8-2"><a href="#cb8-2"></a>flux=<span class="kw">compute_sc_flux</span>(<span class="dt">num_cell =</span> <span class="dv">2</span>,<span class="dt">fraction =</span><span class="kw">c</span>(<span class="fl">0.125</span>,<span class="fl">0.875</span>),<span class="dt">fluxscore=</span>scores,<span class="dt">medium =</span> human_blood)</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#optional: flux scores normalization</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>cbrt &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb8-7"><a href="#cb8-7"></a>    <span class="kw">sign</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(x)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb8-8"><a href="#cb8-8"></a>}</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>flux=<span class="kw">cbrt</span>(flux)</span></code></pre></div>
 <details>
 <p><summary><strong>Pipeline for multiple samples/patients</strong></summary></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">#load your seurat object</span></span>
@@ -818,6 +840,13 @@ The cell line medium contains 44 metabolites[1], and their corresponding exchang
 <span id="cb23-2"><a href="#cb23-2"></a>flux&lt;-<span class="kw">compute_flux</span>(<span class="dt">mras=</span>scores,<span class="dt">medium =</span> human_blood)<span class="co">#if data are human derived samples</span></span></code></pre></div>
 <pre><code>## Setting up for optimization.....</code></pre>
 <pre><code>## Computing bulk RNA-seq flux.....</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">#optional.We can apply cubic root normalization to flux scores.</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a></span>
+<span id="cb26-3"><a href="#cb26-3"></a>cbrt &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb26-4"><a href="#cb26-4"></a>    <span class="kw">sign</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(x)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb26-5"><a href="#cb26-5"></a>}</span>
+<span id="cb26-6"><a href="#cb26-6"></a></span>
+<span id="cb26-7"><a href="#cb26-7"></a>flux=<span class="kw">cbrt</span>(flux)</span></code></pre></div>
 </div>
 <div id="inspecting-and-interpreting-the-flux-data" class="section level2">
 <h2>5.Inspecting and interpreting the flux data</h2>
@@ -826,35 +855,35 @@ The cell line medium contains 44 metabolites[1], and their corresponding exchang
 <li><p>One thing to note is that since we are minimizing the sum of overall fluxes in the model, we will get a parsimonious flux data output, meaning lots of reactions will approach 0 flux. (For example, some reactions should only go forward, but the predicted flux has a negative sign with a very small value and can be regarded as approaching 0 flux)</p></li>
 <li><p>Extraction of targeted data. If one is strictly interested in metabolite uptake or release, one can search “nutrient lookup file” to obtain the metabolite exchange Reaction ID. For example, if we want to know the glucose uptake, we need to search for ‘glucose’ to get the glucose uptake reaction, which is HMR_9034. Those can be regarded as glucose metabolite uptake rates. Next, we can pull out the data:</p></li>
 </ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">data</span>(<span class="st">&quot;nutrient_lookup_files&quot;</span>)</span>
-<span id="cb26-2"><a href="#cb26-2"></a>glucose&lt;-<span class="kw">data.frame</span>(<span class="dt">glucose=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_9034&quot;</span>,human_gem<span class="op">$</span>ID),])</span>
-<span id="cb26-3"><a href="#cb26-3"></a>glucose</span></code></pre></div>
-<pre><code>##              glucose
-## Sample1 -0.003921230
-## Sample2 -0.006821517
-## Sample3 -0.003528956
-## Sample4 -0.004844671
-## Sample5 -0.006881031</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">data</span>(<span class="st">&quot;nutrient_lookup_files&quot;</span>)</span>
+<span id="cb27-2"><a href="#cb27-2"></a>glucose&lt;-<span class="kw">data.frame</span>(<span class="dt">glucose=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_9034&quot;</span>,human_gem<span class="op">$</span>ID),])</span>
+<span id="cb27-3"><a href="#cb27-3"></a>glucose</span></code></pre></div>
+<pre><code>##            glucose
+## Sample1 -0.1576912
+## Sample2 -0.1896533
+## Sample3 -0.1522470
+## Sample4 -0.1692082
+## Sample5 -0.1902032</code></pre>
 <p>If one is interested in other reactions (e.g., glycolysis, oxphos, etc.), one needs to search for Reaction_ID using the human_gem file. For example, if we are interested in reaction HMR_4363 in glycolysis pathway:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co">#HMR_4363: 2-phospho-D-glycerate[c] &lt;=&gt; H2O[c] + PEP[c]</span></span>
-<span id="cb28-2"><a href="#cb28-2"></a>HMR_<span class="dv">4363</span>&lt;-<span class="kw">data.frame</span>(<span class="dt">hmr4363=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_4363&quot;</span>,human_gem<span class="op">$</span>ID),])</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="co">#HMR_4363: 2-phospho-D-glycerate[c] &lt;=&gt; H2O[c] + PEP[c]</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a>HMR_<span class="dv">4363</span>&lt;-<span class="kw">data.frame</span>(<span class="dt">hmr4363=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_4363&quot;</span>,human_gem<span class="op">$</span>ID),])</span></code></pre></div>
 <p><strong>For more advanced usage, we can also calculate pathway level activity for 142 pathways. For a given pathway, activity level can be calculated as mean fluxes of reactions associated with that pathway.</strong></p>
 <details>
 <p><summary><strong>Code(click to open)</strong></summary></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>pathway&lt;-<span class="kw">unique</span>(<span class="kw">unlist</span>(human_gem<span class="op">$</span>SUBSYSTEM))</span>
-<span id="cb29-2"><a href="#cb29-2"></a>pathway_score&lt;-<span class="kw">list</span>()</span>
-<span id="cb29-3"><a href="#cb29-3"></a><span class="cf">for</span> (i <span class="cf">in</span> pathway){</span>
-<span id="cb29-4"><a href="#cb29-4"></a>path=i</span>
-<span id="cb29-5"><a href="#cb29-5"></a>activity_score&lt;-<span class="kw">list</span>()</span>
-<span id="cb29-6"><a href="#cb29-6"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(flux)){</span>
-<span id="cb29-7"><a href="#cb29-7"></a>activity_score[d]&lt;-<span class="kw">mean</span>(<span class="kw">abs</span>(flux[<span class="kw">which</span>(<span class="kw">unlist</span>(human_gem<span class="op">$</span>SUBSYSTEM)<span class="op">==</span>i),d]))</span>
-<span id="cb29-8"><a href="#cb29-8"></a>} </span>
-<span id="cb29-9"><a href="#cb29-9"></a>pathway_score[[i]]&lt;-activity_score</span>
-<span id="cb29-10"><a href="#cb29-10"></a>}</span>
-<span id="cb29-11"><a href="#cb29-11"></a></span>
-<span id="cb29-12"><a href="#cb29-12"></a></span>
-<span id="cb29-13"><a href="#cb29-13"></a></span>
-<span id="cb29-14"><a href="#cb29-14"></a>all_pathway_score&lt;-<span class="kw">as.data.frame</span>(<span class="kw">do.call</span>(rbind,pathway_score))</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>pathway&lt;-<span class="kw">unique</span>(<span class="kw">unlist</span>(human_gem<span class="op">$</span>SUBSYSTEM))</span>
+<span id="cb30-2"><a href="#cb30-2"></a>pathway_score&lt;-<span class="kw">list</span>()</span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="cf">for</span> (i <span class="cf">in</span> pathway){</span>
+<span id="cb30-4"><a href="#cb30-4"></a>path=i</span>
+<span id="cb30-5"><a href="#cb30-5"></a>activity_score&lt;-<span class="kw">list</span>()</span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(flux)){</span>
+<span id="cb30-7"><a href="#cb30-7"></a>activity_score[d]&lt;-<span class="kw">mean</span>(<span class="kw">abs</span>(flux[<span class="kw">which</span>(<span class="kw">unlist</span>(human_gem<span class="op">$</span>SUBSYSTEM)<span class="op">==</span>i),d]))</span>
+<span id="cb30-8"><a href="#cb30-8"></a>} </span>
+<span id="cb30-9"><a href="#cb30-9"></a>pathway_score[[i]]&lt;-activity_score</span>
+<span id="cb30-10"><a href="#cb30-10"></a>}</span>
+<span id="cb30-11"><a href="#cb30-11"></a></span>
+<span id="cb30-12"><a href="#cb30-12"></a></span>
+<span id="cb30-13"><a href="#cb30-13"></a></span>
+<span id="cb30-14"><a href="#cb30-14"></a>all_pathway_score&lt;-<span class="kw">as.data.frame</span>(<span class="kw">do.call</span>(rbind,pathway_score))</span></code></pre></div>
 <table class=" lightable-classic-2" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -883,19 +912,19 @@ V5
 Glycolysis / Gluconeogenesis
 </td>
 <td style="text-align:left;">
-0.001530831
+0.07124485
 </td>
 <td style="text-align:left;">
-0.001526529
+0.07038952
 </td>
 <td style="text-align:left;">
-0.001991297
+0.07659393
 </td>
 <td style="text-align:left;">
-0.002070957
+0.079158
 </td>
 <td style="text-align:left;">
-0.001560382
+0.06834173
 </td>
 </tr>
 <tr>
@@ -903,19 +932,19 @@ Glycolysis / Gluconeogenesis
 Starch and sucrose metabolism
 </td>
 <td style="text-align:left;">
-3.014849e-07
+0.003834665
 </td>
 <td style="text-align:left;">
-2.260415e-06
+0.005815395
 </td>
 <td style="text-align:left;">
-4.181776e-07
+0.006451938
 </td>
 <td style="text-align:left;">
-6.5572e-06
+0.01137953
 </td>
 <td style="text-align:left;">
-1.516642e-06
+0.006060485
 </td>
 </tr>
 <tr>
@@ -923,19 +952,19 @@ Starch and sucrose metabolism
 Galactose metabolism
 </td>
 <td style="text-align:left;">
-0.0003478317
+0.04070414
 </td>
 <td style="text-align:left;">
-0.0002626901
+0.04193901
 </td>
 <td style="text-align:left;">
-0.0002393698
+0.03511533
 </td>
 <td style="text-align:left;">
-0.0006298963
+0.05113781
 </td>
 <td style="text-align:left;">
-0.0002340547
+0.03434795
 </td>
 </tr>
 <tr>
@@ -943,19 +972,19 @@ Galactose metabolism
 Fructose and mannose metabolism
 </td>
 <td style="text-align:left;">
-0.0001812832
+0.02806487
 </td>
 <td style="text-align:left;">
-0.0002694215
+0.02815827
 </td>
 <td style="text-align:left;">
-0.0001279037
+0.01878627
 </td>
 <td style="text-align:left;">
-0.0002395709
+0.02492249
 </td>
 <td style="text-align:left;">
-0.0003585799
+0.02694139
 </td>
 </tr>
 <tr>
@@ -963,19 +992,19 @@ Fructose and mannose metabolism
 Pentose and glucuronate interconversions
 </td>
 <td style="text-align:left;">
-0.0002392212
+0.03120753
 </td>
 <td style="text-align:left;">
-0.0001685555
+0.02909383
 </td>
 <td style="text-align:left;">
-9.339686e-05
+0.02765286
 </td>
 <td style="text-align:left;">
-0.0004420696
+0.0385429
 </td>
 <td style="text-align:left;">
-0.0001779352
+0.03141638
 </td>
 </tr>
 <tr>
@@ -983,19 +1012,19 @@ Pentose and glucuronate interconversions
 Pyruvate metabolism
 </td>
 <td style="text-align:left;">
-9.81687e-05
+0.02585733
 </td>
 <td style="text-align:left;">
-0.0001017477
+0.02666346
 </td>
 <td style="text-align:left;">
-0.00012052
+0.02648878
 </td>
 <td style="text-align:left;">
-0.0002331896
+0.0310808
 </td>
 <td style="text-align:left;">
-0.000120518
+0.02454639
 </td>
 </tr>
 </tbody>
@@ -1017,40 +1046,41 @@ Pyruvate metabolism
 <p><span class="math inline">\(*\)</span> Usually, each single cell data contains more than one subject (patients). <strong>It would be more natural to estimate the proportions of each cluster/cell type separately for each subject</strong>, as METAFlux will be modeling the interaction within the same TME. However, depending on specific biological questions and data quality, one can still study the average effect across subjects (i.e., proportions of each cluster/cell type are estimated using all data).</p>
 <div id="load-library-and-data-files" class="section level2">
 <h2>1. Load library and data files</h2>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">library</span>(METAFlux)</span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="co">#load medium file.Please read &#39;3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.3&#39; for more details</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a><span class="kw">data</span>(<span class="st">&quot;human_blood&quot;</span>)</span>
-<span id="cb30-4"><a href="#cb30-4"></a><span class="kw">data</span>(<span class="st">&quot;cell_medium&quot;</span>)</span>
-<span id="cb30-5"><a href="#cb30-5"></a><span class="co">#load underlying GEM.Please read &#39;3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.2&#39; for more details</span></span>
-<span id="cb30-6"><a href="#cb30-6"></a><span class="kw">data</span>(<span class="st">&quot;human_gem&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">library</span>(METAFlux)</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="co">#load medium file.Please read &#39;3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.3&#39; for more details</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a><span class="kw">data</span>(<span class="st">&quot;human_blood&quot;</span>)</span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="kw">data</span>(<span class="st">&quot;cell_medium&quot;</span>)</span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="co">#load underlying GEM.Please read &#39;3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.2&#39; for more details</span></span>
+<span id="cb31-6"><a href="#cb31-6"></a><span class="kw">data</span>(<span class="st">&quot;human_gem&quot;</span>)</span></code></pre></div>
 </div>
 <div id="load-the-single-cell-data-and-set-the-cell-type-or-cluster-assignment-as-its-column-names." class="section level2">
 <h2>2. Load the single cell data and set the cell type or cluster assignment as its column names.</h2>
 <p>Please make sure the column names are appropriately named in such a way. The key point is to make sure the colnames in the <strong>countdata</strong> are in the correct format like ‘T_cells“,”T_cells“,”tumor’…..</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">data</span>(<span class="st">&quot;sc_test_example&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">data</span>(<span class="st">&quot;sc_test_example&quot;</span>)</span></code></pre></div>
 <p>Please note that this seurat toy example,this data contains only one patient. For mutiple samples,see example code at the section 2.1</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co">#extract the normalized data from seurat object and Convert to dataframe</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a>countdata&lt;-<span class="kw">as.data.frame</span>(sc_test_example<span class="op">@</span>assays<span class="op">$</span>RNA<span class="op">@</span>data)</span>
-<span id="cb32-3"><a href="#cb32-3"></a></span>
-<span id="cb32-4"><a href="#cb32-4"></a><span class="co">#replace the colnames with cluster/cell type information,here we will model fluxes on cell-type level</span></span>
-<span id="cb32-5"><a href="#cb32-5"></a>data.table<span class="op">::</span><span class="kw">setnames</span>(countdata,sc_test_example<span class="op">$</span>cell_type)</span>
-<span id="cb32-6"><a href="#cb32-6"></a><span class="kw">colnames</span>(countdata)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]<span class="co">#Make sure the colnames are correct!!!</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="co">#extract the normalized data from seurat object and Convert to dataframe</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>countdata&lt;-<span class="kw">as.data.frame</span>(sc_test_example<span class="op">@</span>assays<span class="op">$</span>RNA<span class="op">@</span>data)</span>
+<span id="cb33-3"><a href="#cb33-3"></a></span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="co">#replace the colnames with cluster/cell type information,here we will model fluxes on cell-type level</span></span>
+<span id="cb33-5"><a href="#cb33-5"></a>data.table<span class="op">::</span><span class="kw">setnames</span>(countdata,sc_test_example<span class="op">$</span>cell_type)</span>
+<span id="cb33-6"><a href="#cb33-6"></a><span class="kw">colnames</span>(countdata)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]<span class="co">#Make sure the colnames are correct!!!</span></span></code></pre></div>
 <pre><code>##  [1] &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot;
 ##  [8] &quot;T_cells&quot; &quot;T_cells&quot; &quot;T_cells&quot;</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="co">#check the colnames, it has 43 t cells and 300 tumor cells. </span></span>
-<span id="cb34-2"><a href="#cb34-2"></a><span class="kw">table</span>(<span class="kw">colnames</span>(countdata))</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="co">#check the colnames, it has 43 t cells and 300 tumor cells. </span></span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="kw">table</span>(<span class="kw">colnames</span>(countdata))</span></code></pre></div>
 <pre><code>## 
 ## T_cells   tumor 
 ##      43     300</code></pre>
 </div>
 <div id="create-an-average-expression-profile-for-stratified-bootstrapped-samples-for-this-patient" class="section level2">
 <h2>3. Create an average expression profile for stratified bootstrapped samples for this patient</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="co">#Calculate the mean expression for bootstrap samples</span></span>
-<span id="cb36-2"><a href="#cb36-2"></a><span class="co">#Here this input &quot;countdata&quot; is a dataframe!</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a><span class="co">#For the sake of demonstration, we only set the number of bootstraps to 3. </span></span>
-<span id="cb36-4"><a href="#cb36-4"></a><span class="co">#In real analysis, the number of bootstraps should be much higher(e.g. 100, 200....)</span></span>
-<span id="cb36-5"><a href="#cb36-5"></a>mean_exp=<span class="kw">calculate_avg_exp</span>(<span class="dt">raw=</span>countdata,<span class="dt">n_bootstrap=</span><span class="dv">3</span>,<span class="dt">seed=</span><span class="dv">1</span>)</span>
-<span id="cb36-6"><a href="#cb36-6"></a><span class="kw">head</span>(mean_exp)</span></code></pre></div>
+<p>Please note we only offer the built-in function to calculate the mean expression on bootstrap samples. There are many other ways to aggregate the samples, for example, like median or geometric mean. So users can calculate their own ‘average expression profile’ to feed into the next step, but the layout should be in a same data format like below.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co">#Calculate the mean expression for bootstrap samples</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="co">#Here this input &quot;countdata&quot; is a dataframe!</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="co">#For the sake of demonstration, we only set the number of bootstraps to 3. </span></span>
+<span id="cb37-4"><a href="#cb37-4"></a><span class="co">#In real analysis, the number of bootstraps should be much higher(e.g. 100, 200....)</span></span>
+<span id="cb37-5"><a href="#cb37-5"></a>mean_exp=<span class="kw">calculate_avg_exp</span>(<span class="dt">raw=</span>countdata,<span class="dt">n_bootstrap=</span><span class="dv">3</span>,<span class="dt">seed=</span><span class="dv">1</span>)</span>
+<span id="cb37-6"><a href="#cb37-6"></a><span class="kw">head</span>(mean_exp)</span></code></pre></div>
 <pre><code>##             T_cells tumor T_cells tumor T_cells tumor
 ## MIR1302-2HG       0     0       0     0       0     0
 ## FAM138A           0     0       0     0       0     0
@@ -1062,14 +1092,14 @@ Pyruvate metabolism
 <div id="calculate-mrasmetabolic-reaction-activity-score" class="section level2">
 <h2>4. Calculate MRAS(Metabolic Reaction Activity Score)</h2>
 <p>We can calculate single sample normalized MRAS from data using Gene-protein-reaction (GPR).This step is the same with the bulk RNA-seq pipeline.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="co">#calculate metabolic reaction scores</span></span>
-<span id="cb38-2"><a href="#cb38-2"></a>scores&lt;-<span class="kw">calculate_reaction_score</span>(<span class="dt">data=</span>mean_exp)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co">#calculate metabolic reaction scores</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>scores&lt;-<span class="kw">calculate_reaction_score</span>(<span class="dt">data=</span>mean_exp)</span></code></pre></div>
 <pre><code>## 98.51% metabolic related genes were found......</code></pre>
 <pre><code>## Computing metabolic reaction activity scores......</code></pre>
 <pre><code>## Preparing for score matrix......</code></pre>
 <pre><code>## Metabolic reaction activity scores successfully calculated</code></pre>
 <p>Take a look at MRAS results</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">head</span>(scores,<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="kw">head</span>(scores,<span class="dv">3</span>)</span></code></pre></div>
 <pre><code>##               T_cells        tumor    T_cells.1      tumor.1    T_cells.2
 ## HMR_3905 0.0006250641 0.0014582614 0.0011862824 0.0015157005 0.0013819502
 ## HMR_3907 0.0004856551 0.0011808909 0.0006789092 0.0010456108 0.0007120139
@@ -1082,14 +1112,14 @@ Pyruvate metabolism
 <div id="compute-flux" class="section level2">
 <h2>5. Compute flux</h2>
 <p>We calculate the metabolic fluxes. Note that the order of <em>fraction</em> parameters input should be consistent with the order in <strong>scores</strong> results. For example, Cell type 1(T cells) is the first column of <strong>scores</strong>, and the cell type 2 (tumor cells) is the second column of <strong>scores</strong>, etc. More importantly, fractions need to sum up to 1.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co">#calculate the fractions of celltype/clusters</span></span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">round</span>(<span class="kw">table</span>(sc_test_example<span class="op">$</span>cell_type)<span class="op">/</span><span class="kw">nrow</span>(sc_test_example<span class="op">@</span>meta.data),<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="co">#calculate the fractions of celltype/clusters</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a><span class="kw">round</span>(<span class="kw">table</span>(sc_test_example<span class="op">$</span>cell_type)<span class="op">/</span><span class="kw">nrow</span>(sc_test_example<span class="op">@</span>meta.data),<span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## 
 ## T_cells   tumor 
 ##   0.125   0.875</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co">#calculate flux,here we used human blood as our medium, but please change to cell line medium if you sample is from cell line.</span></span>
-<span id="cb47-2"><a href="#cb47-2"></a><span class="co">#num_cell:number of cell types/clusters=2</span></span>
-<span id="cb47-3"><a href="#cb47-3"></a>flux=<span class="kw">compute_sc_flux</span>(<span class="dt">num_cell =</span> <span class="dv">2</span>,<span class="dt">fraction =</span><span class="kw">c</span>(<span class="fl">0.125</span>,<span class="fl">0.875</span>),<span class="dt">fluxscore=</span>scores,<span class="dt">medium =</span> human_blood)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co">#calculate flux,here we used human blood as our medium, but please change to cell line medium if you sample is from cell line.</span></span>
+<span id="cb48-2"><a href="#cb48-2"></a><span class="co">#num_cell:number of cell types/clusters=2</span></span>
+<span id="cb48-3"><a href="#cb48-3"></a>flux=<span class="kw">compute_sc_flux</span>(<span class="dt">num_cell =</span> <span class="dv">2</span>,<span class="dt">fraction =</span><span class="kw">c</span>(<span class="fl">0.125</span>,<span class="fl">0.875</span>),<span class="dt">fluxscore=</span>scores,<span class="dt">medium =</span> human_blood)</span></code></pre></div>
 <pre><code>## Preparing for TME S matrix.....</code></pre>
 <pre><code>## S matrix completed......</code></pre>
 <pre><code>## Compute metabolic flux......</code></pre>
@@ -1108,9 +1138,9 @@ Pyruvate metabolism
 <ul>
 <li>The total dimension of predicted flux data will be <span class="math inline">\((num\_cell*13082+1648)*number\_of\_bootstrap\)</span>. Row names are annotated with celltype 1, celltype2, etc., to indicate which cell type/cluster this reaction is referring. Row names with “external_medium” are reactions that the whole TME exchanges (uptake or release) metabolites with the external environment. Those reactions refer to the entire tumor community, not one specific cell type. Row names with “internal_medium “are reactions that specific cell type/cluster exchange (uptake or release) metabolites with TME.</li>
 </ul>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="kw">dim</span>(flux)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="kw">dim</span>(flux)</span></code></pre></div>
 <pre><code>## [1] 27812     3</code></pre>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="co">#(2*13082+1648)*3=27812*3</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="co">#(2*13082+1648)*3=27812*3</span></span></code></pre></div>
 <ul>
 <li><p>Signs of fluxes are biologically meaningful. This is already mentioned in the bulk pipeline, but here the logic is the same. For the nutrient uptake/release case (those represented by 1648 exchange reactions in nutirent lookup files), a positive value means a release of compounds, and a negative value means uptake of compounds. For other reactions, a positive value implies the net flux is in a forward direction, and a negative flux indicates the net flux is in a backward direction. Absolute values denote the magnitude of flux</p></li>
 <li><p>The cell type-specific fluxes are average flux. The cell type-specific fluxes are mean flux or unit flux for each cell type. More specifically, if cell type 1 flux of reaction <em>A</em> equals 0.2, this simply means the flux of reaction <em>A</em> for an average cell in cell type 1 is 0.2. The external_medium fluxes are <strong>not</strong> average flux, but instead, they are weighted total fluxes.The fluxes between external_medium and internal_medium hold such an equation for exchange reactions:</p></li>
@@ -1119,13 +1149,20 @@ Pyruvate metabolism
 <ul>
 <li>We can extract the reactions we are interested. Again, if one is strictly interested in metabolite uptake or release, one can search “nutrient lookup file” to obtain the metabolite exchange Reaction ID( Please read ‘bulk step by step breakdown section 2.3.1’ for more details). For example, if we want to know the glucose uptake, we need to search for ‘glucose’ to get the glucose uptake reaction, which is HMR_9034. Next, we can pull out the data by,</li>
 </ul>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="kw">data</span>(<span class="st">&quot;nutrient_lookup_files&quot;</span>)</span>
-<span id="cb55-2"><a href="#cb55-2"></a>glucose&lt;-<span class="kw">data.frame</span>(<span class="dt">glucose=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_9034&quot;</span>,<span class="kw">rownames</span>(flux)),])</span>
-<span id="cb55-3"><a href="#cb55-3"></a>glucose</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="kw">data</span>(<span class="st">&quot;nutrient_lookup_files&quot;</span>)</span>
+<span id="cb56-2"><a href="#cb56-2"></a>glucose&lt;-<span class="kw">data.frame</span>(<span class="dt">glucose=</span>flux[<span class="kw">grep</span>(<span class="st">&quot;HMR_9034&quot;</span>,<span class="kw">rownames</span>(flux)),])</span>
+<span id="cb56-3"><a href="#cb56-3"></a>glucose</span></code></pre></div>
 <pre><code>##                                       glucose.V1   glucose.V2   glucose.V3
 ## celltype 1 internal_medium HMR_9034 -0.002553238 -0.002644442 -0.004345167
 ## celltype 2 internal_medium HMR_9034 -0.005244402 -0.004670345 -0.005218941
 ## external_medium HMR_9034            -0.004908006 -0.004417107 -0.005109720</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="co">#if needed we can apply cubic root normalization to normalize the scores</span></span>
+<span id="cb58-2"><a href="#cb58-2"></a></span>
+<span id="cb58-3"><a href="#cb58-3"></a>cbrt &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb58-4"><a href="#cb58-4"></a>    <span class="kw">sign</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(x)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb58-5"><a href="#cb58-5"></a>}</span>
+<span id="cb58-6"><a href="#cb58-6"></a></span>
+<span id="cb58-7"><a href="#cb58-7"></a>glucose=<span class="kw">cbrt</span>(glucose)</span></code></pre></div>
 <p>Taken all those key points together, we see Glucose.V1, Glucose.v2, Glucose.V3 are 3 bootstrap samples. One may look at the distribution of all bootstraps to compare T cells and tumor cells nutrient uptake profile.</p>
 <ul>
 <li>“celltype 1 internal_medium HMR_9034” is the glucose uptake flux for cell type 1(referring to T cells in toy example).</li>

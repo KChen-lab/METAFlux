@@ -31,6 +31,13 @@ data("cell_medium")
 scores<-calculate_reaction_score(bulk_test_example)
 #Calculate flux for cell line data
 flux<-compute_flux(mras=scores,medium = cell_medium) 
+
+#optional: flux scores cubic root normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
 
 
@@ -46,11 +53,16 @@ scores<-calculate_reaction_score(bulk_test_example)
 #Calculate flux for human sample data
 flux<-compute_flux(mras=scores,medium=human_blood) 
 
+#optional: flux scores cubic root normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
 
+flux=cbrt(flux)
 ```
 
 
-## 2.1 For sc RNA-seq sample
+## 2.1 For scRNA-seq sample
 
 Here we only demonstrate how to interface with Seurat object for  one **patient sample**. Please refer to the example code at the end of this section for multiple samples pipeline.
 
@@ -92,6 +104,14 @@ round(table(sc_test_example$cell_type)/nrow(sc_test_example@meta.data),3)
 ```{r,message=F,results='hide'}
 #num_cell=number of cell types/clusters, here we only have t cells and tumor cell, thus input is 2
 flux=compute_sc_flux(num_cell = 2,fraction =c(0.125,0.875),fluxscore=scores,medium = human_blood)
+
+
+#optional: flux scores normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
 
 
@@ -253,7 +273,15 @@ Subsequently, we calculate the metabolic fluxes for the 13082 reactions.
 #flux<-compute_flux(mras=scores,medium = cell_medium)#if data are cell line samples
 flux<-compute_flux(mras=scores,medium = human_blood)#if data are human derived samples
 
+#optional.We can apply cubic root normalization to flux scores.
+
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
+
 
 
 
@@ -374,6 +402,8 @@ table(colnames(countdata))
 ```
 
 ## 3.	Create an average expression profile for stratified bootstrapped samples for this patient
+
+Please note we only offer the built-in function to calculate the mean expression on bootstrap samples. There are many other ways to aggregate the samples, for example, like median or geometric mean. So users can calculate their own 'average expression profile' to feed into the next step, but the layout should be in a same data format like below. 
 ```{r}
 
 
@@ -449,6 +479,13 @@ $Proportion^{cell type1}\cdot Intenal_-Medium^{Celltype1}_{exchange_-reaction_i}
 data("nutrient_lookup_files")
 glucose<-data.frame(glucose=flux[grep("HMR_9034",rownames(flux)),])
 glucose
+#if needed we can apply cubic root normalization to normalize the scores
+
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+glucose=cbrt(glucose)
 ```
 
 Taken all those key points together, we see Glucose.V1, Glucose.v2, Glucose.V3 are 3 bootstrap samples. One may look at the distribution of all bootstraps to compare T cells and tumor cells nutrient uptake profile.
