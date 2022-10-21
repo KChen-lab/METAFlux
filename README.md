@@ -24,7 +24,7 @@ METAFlux R package can be easily installed from Github using devtools:
 ### Installation of Other Dependencies
 * Install the osqp package for optimization using `install.packages('osqp')`, If you encounter any issue during METAFlux installation.
 * Install the dplyr package using `install.packages('dplyr')`.
-* For single cell data analysis, we provide pipeline to work with Seurat(Seurat_4.0.00. Please install Seurat package
+* For single cell data analysis, we provide pipeline to work with Seurat(Seurat V4). Please install Seurat package
  by `install.packages('Seurat')`.
 
 
