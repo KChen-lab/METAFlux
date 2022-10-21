@@ -27,37 +27,41 @@ generate_boots <- function(celltype, n) {
 #' Calculate mean expression for one bootstrap
 #'
 #' @param i index
-#' @param raw single cell data
+#' @param myseurat single cell Seurat object
 #' @param samples generated bootstrap index data
+#' @param myident Seurat idents.This will be a character string indicating the grouping of the seurat object
 #'
 #' @return
-#'
+#' @import Seurat
 #'
 #' @examples
-get_ave_exp <- function(i, raw, samples) {
-  sample <- as.data.frame(t(raw[, samples[, i, drop = F]]))
-  sname <- colnames(raw)[samples[, i, drop = F]]
-  k <- split(sample, sname)
-  averg <- do.call(cbind, lapply(k, colMeans))
-  return(averg)
-}
 
+get_ave_exp <- function(i, myseurat, samples,myident) {
+  meta.data=myseurat@meta.data[samples[,i],]
+  sample <-myseurat@assays$RNA@counts[,samples[,i]]
+  SeuratObject<-suppressWarnings(
+    CreateSeuratObject(count=sample,meta.data = meta.data))
+  ave<-AverageExpression(SeuratObject,group.by = myident,return.seurat = T)[["RNA"]]@data
+  return(ave)
+}
 
 
 #' Calculate bootstrap mean expression for single cell data
 #'
-#' @param raw data frame of single cell data with celltype or cluster as colnames
 #' @param n_bootstrap number of bootstrap
 #' @param seed random seed
+#' @param myseurat Seurat object
+#' @param myident Seurat idents for grouping.This will be a character string indicating the grouping of the seurat object
 #'
 #' @return mean expression data
+#' @import Seurat
 #' @export
 #'
 #' @examples
-calculate_avg_exp <- function(raw, n_bootstrap, seed) {
+calculate_avg_exp <- function(myseurat,myident,n_bootstrap,seed) {
   set.seed(seed)
-  samples <- generate_boots(celltype = colnames(raw), n = n_bootstrap)
-  exp <- lapply(1:n_bootstrap, get_ave_exp, raw, samples)
+  samples=generate_boots(myseurat@meta.data[,myident],n_bootstrap)
+  exp <- lapply(1:n_bootstrap,get_ave_exp,myseurat,samples,myident)
   exp <- do.call(cbind, exp)
   return(exp)
 }
