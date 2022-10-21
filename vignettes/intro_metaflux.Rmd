@@ -10,14 +10,16 @@ vignette: |
   %\VignetteIndexEntry{Tutorial of METAFlux:Bulk and single cell RNA-seq} %\VignetteEngine{knitr::knitr} %\VignetteEncoding{UTF-8}
 ---
 
+
+
 # 1.Introduction
-This vignette will cover a quick workflow and a step by step breakdown of calculating metabolic fluxes using METAFlux(METAbolic Flux balance analysis), a framework to obtain metabolic fluxes from bulk RNA-seq or single-cell RNA-seq data. Fluxes, usually measured in mmol/gDW/hr, are velocities of metabolic reactions. In METAFlux, however, the predicted fluxes are calculated and normalized from gene expression data, meaning that the results are relative flux scores.
+This vignette will cover a quick workflow and a step by step explanation of calculating metabolic fluxes using METAFlux(METAbolic Flux balance analysis), a framework to obtain metabolic fluxes from bulk RNA-seq or single-cell RNA-seq data. Fluxes, usually measured in mmol/gDW/hr, are velocities of metabolic reactions. In METAFlux, however, the predicted fluxes are calculated and normalized from gene expression data, meaning that the results are relative flux scores.
 
 # 2.Quick workflow
 
 ## 2.1 For bulk RNA-seq sample
 
-We have run both cell line and human sample models, but users will only need to run one model by choosing only **one** medium file as the input to run METAFlux. 
+We will run both cell line and human sample models.Depending on whether your data is cell line or human RNA-seq data, users will only need to run one model by choosing only **one** medium file(either cell medium or human_blood)as the input to run METAFlux.
 
 **1.cell line data**
 ```{R, message=FALSE,results='hide'}
@@ -31,6 +33,13 @@ data("cell_medium")
 scores<-calculate_reaction_score(bulk_test_example)
 #Calculate flux for cell line data
 flux<-compute_flux(mras=scores,medium = cell_medium) 
+
+#optional: flux scores cubic root normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
 
 
@@ -46,11 +55,16 @@ scores<-calculate_reaction_score(bulk_test_example)
 #Calculate flux for human sample data
 flux<-compute_flux(mras=scores,medium=human_blood) 
 
+#optional: flux scores cubic root normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
 
+flux=cbrt(flux)
 ```
 
 
-## 2.1 For sc RNA-seq sample
+## 2.1 For scRNA-seq sample
 
 Here we only demonstrate how to interface with Seurat object for  one **patient sample**. Please refer to the example code at the end of this section for multiple samples pipeline.
 
@@ -59,39 +73,43 @@ Here we only demonstrate how to interface with Seurat object for  one **patient 
 ```{r,message=FALSE}
 
 library(METAFlux)
-#load the toy seurat example, this data only has one patient. For mutiple samples,see example code in section 4
+#load the toy seurat example, this data only has one patient. For mutiple samples,see example code at the end of this section.
 data("sc_test_example")
 # medium file for human derived samples
 data("human_blood")
 
-#extract the normalized data from seurat obejct
-countdata<-as.data.frame(sc_test_example@assays$RNA@data)
+#check cell types
+table(sc_test_example$Cell_type)
 
-#replace the colnames with cluster/cell type information,here we will model fluxes on cell-type level
-data.table::setnames(countdata,sc_test_example$cell_type)
-
-#check the colnames, it has 43 t cells and 300 tumor cells. Make sure the colnames are correct.
-table(colnames(countdata))
-
-#Calculate the mean expression for bootstrap samples
+#Calculate the mean expression for bootstrap samples from seurat object
+#Using "Cell_type" in seurat as my grouping variable
 #For the sake of demonstration, we only set the number of bootstraps to 3. 
 #In real analysis, the number of bootstraps should be much higher(e.g. 100, 200....)
-#here this input "countdata" is a dataframe
-mean_exp=calculate_avg_exp(raw=countdata,n_bootstrap=3,seed=1)
+
+mean_exp=calculate_avg_exp(myseurat = sc_test_example,myident = 'Cell_type',n_bootstrap=3,seed=1)
+
 
 #calculate metabolic reaction scores
 scores<-calculate_reaction_score(data=mean_exp)
 
 #calculate the fractions of celltype/clusters
-round(table(sc_test_example$cell_type)/nrow(sc_test_example@meta.data),3)
+round(table(sc_test_example$Cell_type)/nrow(sc_test_example@meta.data),1)
 
 #calculate flux: here we used human blood as our medium, but please use cell line medium when samples are cell line.
 
 ```
 
 ```{r,message=F,results='hide'}
-#num_cell=number of cell types/clusters, here we only have t cells and tumor cell, thus input is 2
-flux=compute_sc_flux(num_cell = 2,fraction =c(0.125,0.875),fluxscore=scores,medium = human_blood)
+#num_cell=number of cell types/clusters, here we have 4 cell types, thus input is 4. Make sure the sum of cell percentage is 1.The order of fraction should be the same as that of "Mean_exp" data
+flux=compute_sc_flux(num_cell = 4,fraction =c(0.1,0.3,0.3,0.3),fluxscore=scores,medium = human_blood)
+
+
+#optional: flux scores normalization
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
 
 
@@ -100,13 +118,10 @@ flux=compute_sc_flux(num_cell = 2,fraction =c(0.125,0.875),fluxscore=scores,medi
 ```{r regressvar, fig.height=7, fig.width=11, results='hide',eval = FALSE}
 #load your seurat object
 #sample code for 4 clusters in multiple patients
-obj.list <- SplitObject(seurat, split.by = "Sample")
+obj.list <- SplitObject(seurat, split.by = "patient_id")
 for (i in c(1:length(obj.list))){
 sc<-obj.list[[i]]
-countdata<-as.data.frame(sc@assays$RNA@data)
-data.table::setnames(countdata,sc$Cell_type)
-# print(table(colnames(countdata)))
-mean_exp=calculate_avg_exp(raw=countdata,n_bootstrap=100,seed=1)
+mean_exp=calculate_avg_exp(myseurat = sc_test_example,myident = 'Cell_type',n_bootstrap=50,seed=1)
 scores<-calculate_reaction_score(data=mean_exp)
 #g=round(table(sc$Cell_type)/nrow(sc@meta.data),3)
 g=table(sc$Cell_type)/nrow(sc@meta.data)
@@ -172,7 +187,12 @@ kable_classic_2(full_width = F)
 
 
 For each reaction, we also get other important information from this file such as: whether the reaction is reversible, which compartment it is taking place in, and what metabolites and genes are involved. The 1 to 1 relationship is color coded in the cartoon below.
-![](humangendemo.jpeg)
+
+```{r,echo=FALSE}
+knitr::include_graphics("/Users/yuefanhuang/Desktop/metabolism work/humangendemo.jpeg", error = FALSE)
+
+```
+
 
 ### 2.3 Load the METAFlux medium.
 
@@ -224,7 +244,9 @@ data("nutrient_lookup_files")
 ```
 
 ‘Nutrient look up files’ contains 1648 exchange reactions(*note:exchange reactions are artificial reactions! They are included here because this is a mathematical representation of uptake/secrete metabolites into the extracellular space*) that describe how cells uptake or release metabolites. For example, if we need to add metabolite “naphthalene,” one could search in the search box, and the corresponding nutrient reaction and the equation will be located. Next, one needs to add new row of naphthalene and HMR_7110 to the current medium file. This updated medium file will later be used for modeling.
-![](adddemo.jpeg)
+```{r,echo=FALSE, out.width = '100%'}
+knitr::include_graphics("/Users/yuefanhuang/Desktop/metabolism work/adddemo.jpeg", error = FALSE)
+```
 </details>
 \
 
@@ -243,10 +265,18 @@ Subsequently, we calculate the metabolic fluxes for the 13082 reactions.
 
 ```{r,results='hide'}
 
-flux<-compute_flux(mras=scores,medium = cell_medium)#if data are cell line samples
+#flux<-compute_flux(mras=scores,medium = cell_medium)#if data are cell line samples
 flux<-compute_flux(mras=scores,medium = human_blood)#if data are human derived samples
 
+#optional.We can apply cubic root normalization to flux scores.
+
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+flux=cbrt(flux)
 ```
+
 
 
 
@@ -278,6 +308,42 @@ HMR_4363<-data.frame(hmr4363=flux[grep("HMR_4363",human_gem$ID),])
 
 
 
+**For more advanced usage, we can also calculate pathway level activity for 142 pathways. For a given pathway, activity level can be calculated as mean fluxes of reactions associated with that pathway.**
+
+<details>
+
+<summary>**Code(click to open)**</summary>
+
+```{r}
+pathway<-unique(unlist(human_gem$SUBSYSTEM))
+pathway_score<-list()
+for (i in pathway){
+path=i
+activity_score<-list()
+for (d in 1:ncol(flux)){
+activity_score[d]<-mean(abs(flux[which(unlist(human_gem$SUBSYSTEM)==i),d]))
+} 
+pathway_score[[i]]<-activity_score
+}
+
+
+
+all_pathway_score<-as.data.frame(do.call(rbind,pathway_score))
+
+```
+
+
+```{r,echo=FALSE}
+
+head(all_pathway_score)%>%
+kbl() %>%
+kable_classic_2(full_width = F)
+
+
+```
+
+</details>
+\
 
 
 
@@ -299,40 +365,44 @@ $*$ Usually, each single cell data contains more than one subject (patients). **
 ```{r}
 
 library(METAFlux)
-#load medium file.Please read 'bulk step by step breakdown section 2.3' for more details
+#load medium file.Please read '3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.3' for more details
 data("human_blood")
 data("cell_medium")
-#load underlying GEM.Please read 'bulk step by step breakdown section 2.2' for more details
+#load underlying GEM.Please read '3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.2' for more details
 data("human_gem")
 ```
 
 
 ## 2.	Load the single cell data and set the cell type or cluster assignment as its column names.
 
-Please make sure the column names are appropriately named in such a way. The key point is to make sure the colnames in the **countdata** are in the correct format like ‘T_cells","T_cells","tumor'..... 
+
 ```{r}
 
-data("sc_test_example")#seurat toy example,this data contains only one patient
-#extract the normalized data from seurat obejct
-countdata<-as.data.frame(sc_test_example@assays$RNA@data)
+data("sc_test_example")
 
-#replace the colnames with cluster/cell type information,here we will model fluxes on cell-type level
-data.table::setnames(countdata,sc_test_example$cell_type)
-colnames(countdata)[1:10]#Make sure the colnames are correct!!!
 
-#check the colnames, it has 43 t cells and 300 tumor cells. 
-table(colnames(countdata))
+```
+Please note that this seurat toy example,this data contains only one patient. For mutiple samples,see example code at the section 2.1
+
+```{r}
+
+
+#check cell types, here we want to model cell-type level flux
+table(sc_test_example$Cell_type)
 ```
 
 ## 3.	Create an average expression profile for stratified bootstrapped samples for this patient
+
+Please note we only offer the built-in function to calculate the mean expression on bootstrap samples. There are many other ways to aggregate the samples, for example, like median or geometric mean. So users can calculate their own 'average expression profile' to feed into the next step, but the layout should be in a same data format like below. 
 ```{r}
 
 
 #Calculate the mean expression for bootstrap samples
-#Here this input "countdata" is a dataframe!
 #For the sake of demonstration, we only set the number of bootstraps to 3. 
 #In real analysis, the number of bootstraps should be much higher(e.g. 100, 200....)
-mean_exp=calculate_avg_exp(raw=countdata,n_bootstrap=3,seed=1)
+mean_exp=calculate_avg_exp(myseurat = sc_test_example,myident = 'Cell_type',n_bootstrap=3,seed=1)
+
+
 head(mean_exp)
 
 ```
@@ -350,22 +420,23 @@ scores<-calculate_reaction_score(data=mean_exp)
 
 Take a look at MRAS results
 ```{r}
-head(scores,3)
+head(scores,4)
 ```
 
 
 ## 5. Compute flux
-We calculate the metabolic fluxes. Note that the order of *fraction* parameters input should be consistent with the order in **scores** results. For example, Cell type 1(T cells) is the first column of **scores**, and the cell type 2 (tumor cells) is the second column of **scores**, etc. More importantly, fractions need to sum up to 1.
+We calculate the metabolic fluxes. Note that the order of *fraction* parameters input should be consistent with the order in **scores** results. For example, Cell type 1(B lymphocytes) is the first column of **scores**, and the cell type 2 (Epithelial cells) is the second column of **scores**, etc. More importantly, fractions need to sum up to 1.
 
 
 ```{r}
 
 #calculate the fractions of celltype/clusters
-round(table(sc_test_example$cell_type)/nrow(sc_test_example@meta.data),3)
+round(table(sc_test_example$Cell_type)/nrow(sc_test_example@meta.data),1)
 
 #calculate flux,here we used human blood as our medium, but please change to cell line medium if you sample is from cell line.
-#num_cell:number of cell types/clusters=2
-flux=compute_sc_flux(num_cell = 2,fraction =c(0.125,0.875),fluxscore=scores,medium = human_blood)
+#num_cell:number of cell types/clusters=4
+flux=compute_sc_flux(num_cell = 4,fraction =c(0.1,0.3,0.3,0.3),fluxscore=scores,medium = human_blood)
+
 
 ```
 
@@ -379,7 +450,7 @@ Row names with “external_medium” are reactions that the whole TME exchanges 
 Row names with “internal_medium “are reactions that specific cell type/cluster exchange (uptake or release) metabolites with TME.
 ```{r}
 dim(flux)
-#(2*13082+1648)*3=27812*3
+#(4*13082+1648)*3=53976*3
 
 ```
 
@@ -400,6 +471,13 @@ $Proportion^{cell type1}\cdot Intenal_-Medium^{Celltype1}_{exchange_-reaction_i}
 data("nutrient_lookup_files")
 glucose<-data.frame(glucose=flux[grep("HMR_9034",rownames(flux)),])
 glucose
+#if needed we can apply cubic root normalization to normalize the scores
+
+cbrt <- function(x) {
+    sign(x) * abs(x)^(1/3)
+}
+
+glucose=cbrt(glucose)
 ```
 
 Taken all those key points together, we see Glucose.V1, Glucose.v2, Glucose.V3 are 3 bootstrap samples. One may look at the distribution of all bootstraps to compare T cells and tumor cells nutrient uptake profile.
