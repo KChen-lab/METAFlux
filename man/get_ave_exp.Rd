@@ -4,14 +4,16 @@
 \alias{get_ave_exp}
 \title{Calculate mean expression for one bootstrap}
 \usage{
-get_ave_exp(i, raw, samples)
+get_ave_exp(i, myseurat, samples, myident)
 }
 \arguments{
 \item{i}{index}
 
-\item{raw}{single cell data}
+\item{myseurat}{single cell Seurat object}
 
 \item{samples}{generated bootstrap index data}
+
+\item{myident}{Seurat idents.This will be a character string indicating the grouping of the seurat object}
 }
 \value{
 

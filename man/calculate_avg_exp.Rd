@@ -4,10 +4,12 @@
 \alias{calculate_avg_exp}
 \title{Calculate bootstrap mean expression for single cell data}
 \usage{
-calculate_avg_exp(raw, n_bootstrap, seed)
+calculate_avg_exp(myseurat, myident, n_bootstrap, seed)
 }
 \arguments{
-\item{raw}{data frame of single cell data with celltype or cluster as colnames}
+\item{myseurat}{Seurat object}
+
+\item{myident}{Seurat idents for grouping.This will be a character string indicating the grouping of the seurat object}
 
 \item{n_bootstrap}{number of bootstrap}
 
