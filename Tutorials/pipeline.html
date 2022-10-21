@@ -420,7 +420,7 @@ code span.ot { color: #007020; }
 <li><a href="#step-by-step-breakdown-single-cell-pipeline">4.Step by step breakdown: Single-cell pipeline</a>
 <ul>
 <li><a href="#load-library-and-data-files">1. Load library and data files</a></li>
-<li><a href="#load-the-single-cell-data-and-set-the-cell-type-or-cluster-assignment-as-its-column-names.">2. Load the single cell data and set the cell type or cluster assignment as its column names.</a></li>
+<li><a href="#load-the-single-cell-data">2. Load the single cell data</a></li>
 <li><a href="#create-an-average-expression-profile-for-stratified-bootstrapped-samples-for-this-patient">3. Create an average expression profile for stratified bootstrapped samples for this patient</a></li>
 <li><a href="#calculate-mrasmetabolic-reaction-activity-score">4. Calculate MRAS(Metabolic Reaction Activity Score)</a></li>
 <li><a href="#compute-flux">5. Compute flux</a></li>
@@ -1046,8 +1046,8 @@ Pyruvate metabolism
 <span id="cb31-5"><a href="#cb31-5"></a><span class="co">#load underlying GEM.Please read &#39;3.Step by step breakdown:Bulk RNA-seq pipeline section 3.2.2&#39; for more details</span></span>
 <span id="cb31-6"><a href="#cb31-6"></a><span class="kw">data</span>(<span class="st">&quot;human_gem&quot;</span>)</span></code></pre></div>
 </div>
-<div id="load-the-single-cell-data-and-set-the-cell-type-or-cluster-assignment-as-its-column-names." class="section level2">
-<h2>2. Load the single cell data and set the cell type or cluster assignment as its column names.</h2>
+<div id="load-the-single-cell-data" class="section level2">
+<h2>2. Load the single cell data</h2>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">data</span>(<span class="st">&quot;sc_test_example&quot;</span>)</span></code></pre></div>
 <p>Please note that this seurat toy example,this data contains only one patient. For mutiple samples,see example code at the section 2.1</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="co">#check cell types, here we want to model cell-type level flux</span></span>

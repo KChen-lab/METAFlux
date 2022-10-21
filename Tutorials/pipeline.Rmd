@@ -371,7 +371,7 @@ data("human_gem")
 ```
 
 
-## 2.	Load the single cell data and set the cell type or cluster assignment as its column names.
+## 2.	Load the single cell data
 
 
 ```{r}
