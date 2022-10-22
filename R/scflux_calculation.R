@@ -4,7 +4,7 @@
 #' @param fraction fraction of each cell types. Fractions need to sum up to 1
 #' @param fluxscore calculated metabolic activity score(MRAS)
 #' @param medium Medium profile
-#' @importFrom Seurat as.sparse
+#' @import Seurat
 #' @import utils
 #'
 #' @return Flux score for single cell data
