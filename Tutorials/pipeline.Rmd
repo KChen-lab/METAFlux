@@ -1,7 +1,7 @@
 ---
 title: "Tutorial of METAFlux"
 author: "Yuefan Huang, Kyle Tsai"
-date: "9/1/2022"
+date: "10/25/2022"
 output:
   prettydoc::html_pretty:
     theme: cayman
@@ -33,11 +33,11 @@ scores<-calculate_reaction_score(bulk_test_example)
 flux<-compute_flux(mras=scores,medium = cell_medium) 
 
 #optional: flux scores cubic root normalization
-cbrt <- function(x) {
-    sign(x) * abs(x)^(1/3)
-}
-
-flux=cbrt(flux)
+# cbrt <- function(x) {
+#     sign(x) * abs(x)^(1/3)
+# }
+# 
+# flux=cbrt(flux)
 ```
 
 
@@ -296,6 +296,13 @@ glucose<-data.frame(glucose=flux[grep("HMR_9034",human_gem$ID),])
 glucose
 ```
 
+
+```{r,fig.height=4, fig.width=4}
+library(ggplot2)
+ggplot(glucose,aes(y=-glucose,x="sample"))+geom_boxplot()+ggtitle("Glucose uptake level")+xlab("")+ylab("Glucose uptake scores")
+
+```
+
 If one is interested in other reactions (e.g., glycolysis, oxphos, etc.), one needs to search for Reaction_ID using the human_gem file. For example, if we are interested in reaction HMR_4363 in glycolysis pathway:
 
 ```{r}
@@ -306,39 +313,36 @@ HMR_4363<-data.frame(hmr4363=flux[grep("HMR_4363",human_gem$ID),])
 
 
 
-**For more advanced usage, we can also calculate pathway level activity for 142 pathways. For a given pathway, activity level can be calculated as mean fluxes of reactions associated with that pathway.**
+We can also calculate pathway level activity for 142 pathways. For a given pathway, activity level can be calculated as mean fluxes of reactions associated with that pathway.
 
-<details>
 
-<summary>**Code(click to open)**</summary>
 
 ```{r}
+#compute pathway level activity for all samples
 pathway<-unique(unlist(human_gem$SUBSYSTEM))
 pathway_score<-list()
 for (i in pathway){
 path=i
-activity_score<-list()
+activity_score<-c()
 for (d in 1:ncol(flux)){
 activity_score[d]<-mean(abs(flux[which(unlist(human_gem$SUBSYSTEM)==i),d]))
 } 
 pathway_score[[i]]<-activity_score
 }
 
-
-
 all_pathway_score<-as.data.frame(do.call(rbind,pathway_score))
 
 ```
 
 
-```{r,echo=FALSE}
-
-head(all_pathway_score)%>%
-kbl() %>%
-kable_classic_2(full_width = F)
-
+```{r,fig.height=18, fig.width=8}
+#heatmap 
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(11,"RdBu"))(256)
+pheatmap::pheatmap(all_pathway_score,cluster_cols = F,color = rev(mapal),scale = "row")
 
 ```
+
+
 
 </details>
 \
@@ -469,20 +473,40 @@ $Proportion^{cell type1}\cdot Intenal_-Medium^{Celltype1}_{exchange_-reaction_i}
 data("nutrient_lookup_files")
 glucose<-data.frame(glucose=flux[grep("HMR_9034",rownames(flux)),])
 glucose
+
+
+
+```
+
+```{r}
 #if needed we can apply cubic root normalization to normalize the scores
 
 cbrt <- function(x) {
     sign(x) * abs(x)^(1/3)
 }
 
-glucose=cbrt(glucose)
+# glucose=cbrt(glucose)
 ```
 
-Taken all those key points together, we see Glucose.V1, Glucose.v2, Glucose.V3 are 3 bootstrap samples. One may look at the distribution of all bootstraps to compare T cells and tumor cells nutrient uptake profile.
+Taken all those key points together, we see Glucose.V1, Glucose.v2, Glucose.V3 are 3 bootstrap samples. One may look at the distribution of all bootstraps to compare b,Epithelial, Myeloid and T cells nutrient uptake profile.
+```{r,fig.height=5, fig.width=4}
+library(ggplot2)
+glucose$celltype=rownames(glucose)
+long_glucose=reshape2::melt(glucose,id.vars='celltype')
+ggplot(long_glucose,aes(y=-value,x=celltype))+geom_boxplot()+ggtitle("Glucose uptake level for different cell types")+xlab("")+ylab("Glucose uptake scores")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
-+ “celltype 1 internal_medium HMR_9034" is the glucose uptake flux for cell type 1(referring to T cells in toy example).
-+ "celltype 2 internal_medium HMR_9034" is the glucose uptake flux for cell type 2（referring to Tumor cells in toy example).
-+ ”external_medium HMR_9034" is the glucose uptake flux for the whole tumor community（referring to combined T cell and tumor cell community in toy example).
+```
+
+
+
+
+
+
++ “celltype 1 internal_medium HMR_9034" is the glucose uptake flux for cell type 1(referring to B cells in toy example).
++ "celltype 2 internal_medium HMR_9034" is the glucose uptake flux for cell type 2（referring to  Epithelial cells in toy example).
++ "celltype 3 internal_medium HMR_9034" is the glucose uptake flux for cell type 2（referring to   Myeloid cells in toy example).
++ "celltype 4 internal_medium HMR_9034" is the glucose uptake flux for cell type 2（referring to  T cells in toy example).
++ ”external_medium HMR_9034" is the glucose uptake flux for the whole tumor community（referring to combined TME community in toy example).
 
 
 
