@@ -1,5 +1,5 @@
 Package: METAFlux
-Title:Characterizing metabolism from bulk and single-cell RNA-seq data using METAFlux
+Title: Characterizing metabolism from bulk and single-cell RNA-seq data using METAFlux
 Version: 0.0.0.9000
 Authors@R: 
        c(
@@ -13,7 +13,7 @@ Authors@R:
            email = "kyletsai2003@gmail.com")
     )
 Description: Calculate fluxes from bulk and sc-rna seq data
-License: GPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
