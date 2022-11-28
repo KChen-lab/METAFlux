@@ -7,7 +7,7 @@
 calculate_avg_exp(myseurat, myident, n_bootstrap, seed)
 }
 \arguments{
-\item{myseurat}{Seurat object}
+\item{myseurat}{Seurat object. METAFlux will calculate on "data" slot}
 
 \item{myident}{Seurat idents for grouping.This will be a character string indicating the grouping of the seurat object}
 
