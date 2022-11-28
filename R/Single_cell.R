@@ -27,7 +27,7 @@ generate_boots <- function(celltype, n) {
 #' Calculate mean expression for one bootstrap
 #'
 #' @param i index
-#' @param myseurat single cell Seurat object, METAFlux will calculate on "data" slot
+#' @param myseurat single cell Seurat object.METAFlux will calculate on "data" slot
 #' @param samples generated bootstrap index data
 #' @param myident Seurat idents.This will be a character string indicating the grouping of the seurat object
 #'
@@ -51,7 +51,7 @@ get_ave_exp <- function(i, myseurat, samples,myident) {
 #'
 #' @param n_bootstrap number of bootstrap
 #' @param seed random seed
-#' @param myseurat Seurat object
+#' @param myseurat Seurat object. METAFlux will calculate on "data" slot
 #' @param myident Seurat idents for grouping.This will be a character string indicating the grouping of the seurat object
 #'
 #' @return mean expression data
