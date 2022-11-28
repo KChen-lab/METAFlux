@@ -9,7 +9,7 @@ get_ave_exp(i, myseurat, samples, myident)
 \arguments{
 \item{i}{index}
 
-\item{myseurat}{single cell Seurat object, METAFlux will calculate on "data" slot}
+\item{myseurat}{single cell Seurat object.METAFlux will calculate on "data" slot}
 
 \item{samples}{generated bootstrap index data}
 
