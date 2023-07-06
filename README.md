@@ -3,6 +3,8 @@
   <img width="300"  src="https://github.com/KChen-lab/METAFlux/blob/main/METAFlux%20logo.jpeg">
 </p>
 
+[![DOI](https://zenodo.org/badge/515741372.svg)](https://zenodo.org/badge/latestdoi/515741372)
+
 ## Capabilities
 * Use genome scale metabolic model and FBA (Flux balance analysis) to derive 13,082 metabolic fluxes for bulk and single cell RNA-seq datasets
 * Discover different modes of metabolic cooperation and competition in single-cell RNA-seq data
